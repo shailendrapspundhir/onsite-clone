@@ -1,0 +1,34 @@
+{
+  "$id": "auth.login",
+  "type": "object",
+  "required": ["email", "password"],
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "minLength": 1
+    },
+    "password": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "errorMessages": {
+    "properties": {
+      "email": {
+        "format": "Invalid email address",
+        "minLength": "Email is required"
+      },
+      "password": { "minLength": "Password is required" }
+    },
+    "required": "This field is required"
+  },
+  "errorCodes": {
+    "properties": {
+      "email": { "format": "AUTH_001", "minLength": "AUTH_002" },
+      "password": { "minLength": "AUTH_002" }
+    },
+    "required": "FIELD_REQUIRED"
+  }
+}

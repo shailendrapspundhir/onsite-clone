@@ -1,0 +1,1 @@
+/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/build/intermediates/cxx/Debug/4k3x3e22/obj/arm64-v8a

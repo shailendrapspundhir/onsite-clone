@@ -1,0 +1,17 @@
+mutation LoginWithEmail($input: LoginEmailInput!) {
+  loginWithEmail(input: $input) {
+    accessToken
+    expiresIn
+    refreshToken
+    user { id email userType }
+  }
+}
+
+mutation RegisterWithEmail($input: RegisterEmailInput!) {
+  registerWithEmail(input: $input) {
+    accessToken
+    expiresIn
+    refreshToken
+    user { id email userType }
+  }
+}

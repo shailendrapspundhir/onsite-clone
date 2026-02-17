@@ -1,0 +1,137 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateApplicationInput {
+  coverMessage: String
+  jobId: String!
+}
+
+input CreateJobInput {
+  benefits: [String!]
+  closesAt: String
+  description: String!
+  employmentType: String!
+  location: String!
+  requirements: [String!]
+  role: String!
+  salaryCurrency: String
+  salaryDisplay: Boolean
+  salaryMax: Float
+  salaryMin: Float
+  title: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type HealthResult {
+  database: Boolean!
+  redis: Boolean!
+  service: String!
+  status: String!
+}
+
+type Job {
+  benefits: [String!]
+  closesAt: DateTime
+  createdAt: DateTime!
+  description: String!
+  employerId: String!
+  employmentType: String!
+  id: String!
+  location: String!
+  publishedAt: DateTime
+  requirements: [String!]
+  role: String!
+  salaryCurrency: String
+  salaryDisplay: Boolean
+  salaryMax: Float
+  salaryMin: Float
+  status: String!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type JobApplication {
+  appliedAt: DateTime!
+  coverMessage: String
+  employerNotes: String
+  id: String!
+  jobId: String!
+  status: String!
+  updatedAt: DateTime!
+  workerId: String!
+}
+
+input JobSearchInput {
+  employmentType: String
+  location: String
+  minSalary: Float
+  page: Float
+  pageSize: Float
+  query: String
+  role: String
+  sortBy: String
+  sortOrder: String
+}
+
+type Mutation {
+  applyToJob(input: CreateApplicationInput!): JobApplication!
+  createJob(input: CreateJobInput!): Job!
+  publishJob(id: String!): Job!
+  updateApplicationStatus(applicationId: String!, input: UpdateApplicationStatusInput!): JobApplication!
+  updateJob(id: String!, input: UpdateJobInput!): Job!
+}
+
+type PaginatedApplications {
+  hasNext: Boolean!
+  hasPrevious: Boolean!
+  items: [JobApplication!]!
+  page: Float!
+  pageSize: Float!
+  total: Float!
+  totalPages: Float!
+}
+
+type PaginatedJobs {
+  hasNext: Boolean!
+  hasPrevious: Boolean!
+  items: [Job!]!
+  page: Float!
+  pageSize: Float!
+  total: Float!
+  totalPages: Float!
+}
+
+type Query {
+  applicationsForJob(jobId: String!, page: Float, pageSize: Float): PaginatedApplications!
+  health: HealthResult!
+  job(id: String!): Job!
+  jobsSearch(input: JobSearchInput!): PaginatedJobs!
+  myApplications(page: Float, pageSize: Float): PaginatedApplications!
+  myJobs(page: Float, pageSize: Float): PaginatedJobs!
+}
+
+input UpdateApplicationStatusInput {
+  employerNotes: String
+  status: String!
+}
+
+input UpdateJobInput {
+  benefits: [String!]
+  closesAt: String
+  description: String
+  employmentType: String
+  location: String
+  requirements: [String!]
+  role: String
+  salaryCurrency: String
+  salaryDisplay: Boolean
+  salaryMax: Float
+  salaryMin: Float
+  status: String
+  title: String
+}

@@ -1,0 +1,33 @@
+{
+  "$id": "auth.otpSend",
+  "type": "object",
+  "required": ["channel"],
+  "properties": {
+    "channel": {
+      "type": "string",
+      "enum": ["EMAIL", "MOBILE"]
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phone": {
+      "type": "string",
+      "pattern": "^\\\\+?[1-9]\\\\d{1,14}$"
+    }
+  },
+  "errorMessages": {
+    "properties": {
+      "channel": { "enum": "Invalid channel (EMAIL or MOBILE)" },
+      "email": { "format": "Invalid email address" },
+      "phone": { "pattern": "Invalid phone number (use E.164 format)" }
+    }
+  },
+  "errorCodes": {
+    "properties": {
+      "channel": "AUTH_006",
+      "email": "AUTH_001",
+      "phone": "AUTH_008"
+    }
+  }
+}

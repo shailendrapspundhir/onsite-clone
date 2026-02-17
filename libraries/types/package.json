@@ -1,0 +1,13 @@
+{
+  "name": "@onsite360/types",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

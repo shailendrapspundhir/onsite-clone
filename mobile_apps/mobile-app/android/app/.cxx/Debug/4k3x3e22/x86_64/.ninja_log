@@ -1,0 +1,7 @@
+# ninja log v5
+1	4	0	/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/.cxx/Debug/4k3x3e22/x86_64/CMakeFiles/cmake.verify_globs	8c801acaf953f81f
+1885	1945	1770461188441293863	/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/build/intermediates/cxx/Debug/4k3x3e22/obj/x86_64/libappmodules.so	83ce139d3d47c922
+0	1884	1770461188360294776	CMakeFiles/appmodules.dir/OnLoad.cpp.o	3a5cd64ad036a862
+0	3	0	/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/.cxx/Debug/4k3x3e22/x86_64/CMakeFiles/cmake.verify_globs	8c801acaf953f81f
+5	1643	1770461251698581063	CMakeFiles/appmodules.dir/OnLoad.cpp.o	3a5cd64ad036a862
+1643	1675	1770461251749580489	/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/build/intermediates/cxx/Debug/4k3x3e22/obj/x86_64/libappmodules.so	83ce139d3d47c922

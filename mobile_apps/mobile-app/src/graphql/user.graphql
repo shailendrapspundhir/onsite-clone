@@ -1,0 +1,24 @@
+query WorkerProfile($userId: String!) {
+  workerProfile(userId: $userId) {
+    id
+    userId
+    firstName
+    lastName
+    bio
+    skillsStorage
+    location
+    experienceYears
+  }
+}
+
+mutation CreateWorkerProfile($input: CreateWorkerProfileInput!) {
+  createWorkerProfile(input: $input) { id userId firstName lastName }
+}
+
+query EmployerProfile($userId: String!) {
+  employerProfile(userId: $userId) { id userId companyName contactEmail industry location }
+}
+
+mutation CreateEmployerProfile($input: CreateEmployerProfileInput!) {
+  createEmployerProfile(input: $input) { id userId companyName }
+}

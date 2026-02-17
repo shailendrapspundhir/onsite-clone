@@ -1,0 +1,49 @@
+{
+  "buildFiles": [
+    "/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/spsp/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/.cxx/Debug/4k3x3e22/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/spsp/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/.cxx/Debug/4k3x3e22/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "artifactName": "appmodules",
+      "abi": "x86",
+      "output": "/home/spsp/work/askaria/onsite-core/mobile_apps/mobile-app/android/app/build/intermediates/cxx/Debug/4k3x3e22/obj/x86/libappmodules.so",
+      "runtimeFiles": [
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/fabricjni/libs/android.x86/libfabricjni.so",
+        "/home/spsp/.gradle/caches/transforms-3/1e0d16eeb9e63f1bc92744eed6c0ac87/transformed/fbjni-0.3.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/folly_runtime/libs/android.x86/libfolly_runtime.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/glog/libs/android.x86/libglog.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_codegen_rncore/libs/android.x86/libreact_codegen_rncore.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_debug/libs/android.x86/libreact_debug.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_nativemodule_core/libs/android.x86/libreact_nativemodule_core.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_newarchdefaults/libs/android.x86/libreact_newarchdefaults.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_render_componentregistry/libs/android.x86/libreact_render_componentregistry.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_render_core/libs/android.x86/libreact_render_core.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_render_debug/libs/android.x86/libreact_render_debug.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_render_graphics/libs/android.x86/libreact_render_graphics.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_render_imagemanager/libs/android.x86/libreact_render_imagemanager.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/react_render_mapbuffer/libs/android.x86/libreact_render_mapbuffer.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/rrc_image/libs/android.x86/librrc_image.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/rrc_view/libs/android.x86/librrc_view.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/rrc_legacyviewmanagerinterop/libs/android.x86/librrc_legacyviewmanagerinterop.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/runtimeexecutor/libs/android.x86/libruntimeexecutor.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/turbomodulejsijni/libs/android.x86/libturbomodulejsijni.so",
+        "/home/spsp/.gradle/caches/transforms-3/c945424c92fb4944826ae38659d1aea6/transformed/react-android-0.72.6-debug/prefab/modules/yoga/libs/android.x86/libyoga.so"
+      ]
+    }
+  }
+}

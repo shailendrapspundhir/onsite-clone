@@ -1,0 +1,22 @@
+query JobsSearch($input: JobSearchInput!) {
+  jobsSearch(input: $input) {
+    items { id title role location salaryMin salaryMax employmentType publishedAt }
+    page
+    pageSize
+    total
+  }
+}
+
+query JobById($id: String!) {
+  job(id: $id) { id title description role location employmentType salaryMin salaryMax publishedAt employerId }
+}
+
+mutation ApplyToJob($input: CreateApplicationInput!) {
+  applyToJob(input: $input) { id jobId workerId status appliedAt }
+}
+
+query MyApplications($page: Float,$pageSize: Float) { myApplications(page: $page,pageSize: $pageSize) { items { id jobId status appliedAt } page pageSize total } }
+
+query MyJobs($page: Float,$pageSize: Float) { myJobs(page: $page,pageSize: $pageSize) { items { id title status publishedAt } page pageSize total } }
+
+query ApplicationsForJob($jobId: String!,$page: Float,$pageSize: Float) { applicationsForJob(jobId: $jobId,page: $page,pageSize: $pageSize) { items { id workerId status appliedAt coverMessage } page pageSize total } }

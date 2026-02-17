@@ -1,0 +1,46 @@
+{
+  "$id": "user.employerProfile",
+  "type": "object",
+  "required": ["companyName", "contactEmail", "desiredRoles"],
+  "properties": {
+    "companyName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200
+    },
+    "industry": { "type": "string", "maxLength": 100 },
+    "description": { "type": "string", "maxLength": 2000 },
+    "website": { "type": "string", "format": "uri" },
+    "location": { "type": "string", "maxLength": 200 },
+    "contactEmail": { "type": "string", "format": "email" },
+    "contactPhone": {
+      "type": "string",
+      "pattern": "^\\\\+?[1-9]\\\\d{1,14}$"
+    },
+    "logoUrl": { "type": "string", "format": "uri" },
+    "desiredRoles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["SECURITY_GUARD", "COOK", "CLEANER", "DRIVER", "RECEPTIONIST", "MAINTENANCE", "OTHER"]
+      },
+      "minItems": 1
+    }
+  },
+  "errorMessages": {
+    "properties": {
+      "companyName": { "minLength": "Company name must be at least 2 characters", "maxLength": "Company name is too long" },
+      "contactEmail": { "format": "Invalid email address" },
+      "contactPhone": { "pattern": "Invalid phone number (E.164 format)" },
+      "desiredRoles": { "minItems": "Select at least one role" }
+    }
+  },
+  "errorCodes": {
+    "properties": {
+      "companyName": { "minLength": "AUTH_003", "maxLength": "AUTH_004" },
+      "contactEmail": { "format": "AUTH_001" },
+      "contactPhone": { "pattern": "AUTH_008" },
+      "desiredRoles": { "minItems": "USER_002" }
+    }
+  }
+}

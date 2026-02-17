@@ -1,0 +1,5 @@
+packages:
+  - 'libraries/*'
+  - 'core/*'
+  - 'web_apps/*'
+  - 'mobile_apps/*'

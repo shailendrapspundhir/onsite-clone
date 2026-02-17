@@ -1,0 +1,11 @@
+schema: /home/spsp/work/askaria/onsite-core/apps/mobile-app/src/graphql/schema.graphql
+documents: /home/spsp/work/askaria/onsite-core/apps/mobile-app/src/graphql/**/*.graphql
+generates:
+  ./src/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
+    config:
+      avoidOptionals: true
+      rawRequest: false

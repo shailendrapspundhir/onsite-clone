@@ -1,0 +1,129 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthPayload {
+  accessToken: String!
+  expiresIn: Float!
+  refreshToken: String!
+  user: User!
+}
+
+type AuthRefreshPayload {
+  accessToken: String!
+  expiresIn: Float!
+  refreshToken: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type HealthResult {
+  database: Boolean!
+  redis: Boolean!
+  service: String!
+  status: String!
+}
+
+input ListUsersInput {
+  page: Float
+  pageSize: Float
+
+  """Only users created on or after this ISO date"""
+  since: String
+  userType: String
+}
+
+input LoginEmailInput {
+  email: String!
+  password: String!
+}
+
+type LogoutResponse {
+  success: Boolean!
+}
+
+type Mutation {
+  loginWithEmail(input: LoginEmailInput!): AuthPayload!
+  logout(input: RefreshTokenInput!): LogoutResponse!
+  refreshTokens(input: RefreshTokenInput!): AuthRefreshPayload!
+  registerWithEmail(input: RegisterEmailInput!): AuthPayload!
+  sendOtp(input: OtpSendInput!): OtpResponse!
+  verifyOtpAndLogin(input: OtpVerifyInput!): AuthPayload
+}
+
+type OtpResponse {
+  message: String!
+  success: Boolean!
+}
+
+input OtpSendInput {
+  channel: String!
+  email: String
+  phone: String
+}
+
+input OtpVerifyInput {
+  channel: String!
+  email: String
+  otp: String!
+  phone: String
+}
+
+type PaginatedUsers {
+  hasNext: Boolean!
+  hasPrevious: Boolean!
+  items: [User!]!
+  page: Float!
+  pageSize: Float!
+  total: Float!
+  totalPages: Float!
+}
+
+type Query {
+  health: HealthResult!
+
+  """List users (admin only; requires X-Admin-Secret header)."""
+  users(input: ListUsersInput!): PaginatedUsers!
+
+  """
+  Get a single validation schema by ID (JSON string). Reusable in web apps.
+  """
+  validationSchema(id: String!): String
+
+  """List all available schema IDs."""
+  validationSchemaIds: [String!]!
+
+  """
+  Get all schemas + error codes/messages as a single JSON string for web apps.
+  """
+  validationSchemasCatalog: String!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
+}
+
+input RegisterEmailInput {
+  email: String!
+  firstName: String
+  lastName: String
+  password: String!
+  userType: String!
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: String!
+  phone: String
+  updatedAt: DateTime!
+  userType: UserType!
+}
+
+enum UserType {
+  EMPLOYER
+  WORKER
+}

@@ -1,0 +1,27 @@
+{
+  "$id": "job.application",
+  "type": "object",
+  "required": ["jobId"],
+  "properties": {
+    "jobId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "coverMessage": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "errorMessages": {
+    "properties": {
+      "jobId": { "format": "Invalid job identifier" },
+      "coverMessage": { "maxLength": "Cover message is too long" }
+    }
+  },
+  "errorCodes": {
+    "properties": {
+      "jobId": "COMMON_001",
+      "coverMessage": "AUTH_004"
+    }
+  }
+}

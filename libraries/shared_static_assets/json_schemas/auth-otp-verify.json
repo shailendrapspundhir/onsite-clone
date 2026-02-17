@@ -1,0 +1,38 @@
+{
+  "$id": "auth.otpVerify",
+  "type": "object",
+  "required": ["channel", "otp"],
+  "properties": {
+    "channel": {
+      "type": "string",
+      "enum": ["EMAIL", "MOBILE"]
+    },
+    "email": { "type": "string", "format": "email" },
+    "phone": {
+      "type": "string",
+      "pattern": "^\\\\+?[1-9]\\\\d{1,14}$"
+    },
+    "otp": {
+      "type": "string",
+      "pattern": "^\\\\d{6}$",
+      "minLength": 6,
+      "maxLength": 6
+    }
+  },
+  "errorMessages": {
+    "properties": {
+      "channel": { "enum": "Invalid channel" },
+      "otp": {
+        "pattern": "OTP must be 6 digits",
+        "minLength": "OTP must be 6 digits",
+        "maxLength": "OTP must be 6 digits"
+      }
+    }
+  },
+  "errorCodes": {
+    "properties": {
+      "channel": "AUTH_006",
+      "otp": "AUTH_007"
+    }
+  }
+}

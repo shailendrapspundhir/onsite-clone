@@ -1,0 +1,124 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateEmployerProfileInput {
+  companyName: String!
+  contactEmail: String!
+  contactPhone: String
+  description: String
+  desiredRoles: [String!]!
+  industry: String
+  location: String
+  logoUrl: String
+  website: String
+}
+
+input CreateWorkerProfileInput {
+  availability: [EmploymentPreferenceInput!]!
+  avatarUrl: String
+  bio: String
+  certifications: [String!]
+  dateOfBirth: String
+  experienceYears: Float
+  firstName: String!
+  lastName: String!
+  location: String
+  preferredLocations: [String!]
+  resumeUrl: String
+  skills: [String!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type EmployerProfile {
+  companyName: String!
+  contactEmail: String!
+  contactPhone: String
+  createdAt: DateTime!
+  description: String
+  desiredRolesStorage: [String!]!
+  id: String!
+  industry: String
+  location: String
+  logoUrl: String
+  updatedAt: DateTime!
+  userId: String!
+  website: String
+}
+
+input EmploymentPreferenceInput {
+  employmentType: String!
+  preferred: Boolean
+  role: String!
+}
+
+type HealthResult {
+  database: Boolean!
+  redis: Boolean!
+  service: String!
+  status: String!
+}
+
+type Mutation {
+  createEmployerProfile(input: CreateEmployerProfileInput!): EmployerProfile!
+  createWorkerProfile(input: CreateWorkerProfileInput!): WorkerProfile!
+  updateEmployerProfile(input: UpdateEmployerProfileInput!): EmployerProfile!
+  updateWorkerProfile(input: UpdateWorkerProfileInput!): WorkerProfile!
+}
+
+type Query {
+  employerProfile(userId: String!): EmployerProfile
+  employerProfileById(id: String!): EmployerProfile!
+  health: HealthResult!
+  workerProfile(userId: String!): WorkerProfile
+  workerProfileById(id: String!): WorkerProfile!
+}
+
+input UpdateEmployerProfileInput {
+  companyName: String
+  contactEmail: String
+  contactPhone: String
+  description: String
+  desiredRoles: [String!]
+  industry: String
+  location: String
+  logoUrl: String
+  website: String
+}
+
+input UpdateWorkerProfileInput {
+  avatarUrl: String
+  bio: String
+  certifications: [String!]
+  dateOfBirth: String
+  experienceYears: Float
+  firstName: String
+  lastName: String
+  location: String
+  preferredLocations: [String!]
+  resumeUrl: String
+  skills: [String!]
+}
+
+type WorkerProfile {
+  avatarUrl: String
+  bio: String
+  certificationsStorage: [String!]
+  createdAt: DateTime!
+  dateOfBirth: DateTime
+  experienceYears: Float
+  firstName: String!
+  id: String!
+  lastName: String!
+  location: String
+  preferredLocationsStorage: [String!]
+  resumeUrl: String
+  skills: [String!]!
+  skillsStorage: [String!]!
+  updatedAt: DateTime!
+  userId: String!
+}
