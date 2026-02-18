@@ -4,6 +4,7 @@ import { RedisService } from '../redis/redis.service';
 import { CACHE_TTL_USER_PROFILE } from '@onsite360/types';
 import type { CreateEmployerProfileInput, UpdateEmployerProfileInput } from './dto/employer-profile.input';
 import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
+import { Logger as LoggerDecorator } from '@onsite360/common'; // @LoggerDecorator for input/output debug logs (pretty JSON on DEBUG)
 
 @Injectable()
 export class EmployerService {
@@ -14,6 +15,7 @@ export class EmployerService {
 
   get repo() { return this.db.getEmployerProfileRepository(); }
 
+  @LoggerDecorator()
   async create(userId: string, input: CreateEmployerProfileInput): Promise<EmployerProfile> {
     const existing = await this.repo.findOne({ where: { userId } });
     if (existing) throw new ForbiddenException('Employer profile already exists for this user');

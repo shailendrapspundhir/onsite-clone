@@ -11,6 +11,7 @@
 - **Admin Dashboard** – http://localhost:3004 ✓
 - **Worker App** – http://localhost:3005 ✓
 - **Employer App** – http://localhost:3006 ✓
+- **Standalone Portal** (new: no lib deps, unified w/ role-based pages) – http://localhost:3007 ✓
 
 ---
 

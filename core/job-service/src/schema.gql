@@ -84,6 +84,7 @@ type Mutation {
   publishJob(id: String!): Job!
   updateApplicationStatus(applicationId: String!, input: UpdateApplicationStatusInput!): JobApplication!
   updateJob(id: String!, input: UpdateJobInput!): Job!
+  withdrawApplication(applicationId: String!): JobApplication!
 }
 
 type PaginatedApplications {

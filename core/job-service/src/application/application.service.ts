@@ -44,6 +44,24 @@ export class ApplicationService {
     return this.repo.save(application);
   }
 
+  /**
+   * Withdraw application (worker-owned only; sets status to WITHDRAWN).
+   * Enables worker to retract; employer can still see history.
+   */
+  async withdraw(workerId: string, applicationId: string): Promise<JobApplication> {
+    const application = await this.repo.findOne({ where: { id: applicationId } });
+    if (!application) throw new NotFoundException('Application not found');
+    if (application.workerId !== workerId) throw new ForbiddenException('Not authorized to withdraw this application');
+
+    // Prevent re-withdraw or invalid states
+    if (application.status === ApplicationStatus.WITHDRAWN) {
+      throw new ConflictException('Application already withdrawn');
+    }
+
+    application.status = ApplicationStatus.WITHDRAWN;
+    return this.repo.save(application);
+  }
+
   async findByJob(employerId: string, jobId: string, page?: number, pageSize?: number): Promise<PaginatedResult<JobApplication>> {
     await this.jobService.ensureEmployerOwns(employerId, jobId);
     const { page: p, pageSize: ps, offset, limit } = normalizePagination({ page, pageSize });

@@ -90,8 +90,11 @@ Protected operations require `Authorization: Bearer <accessToken>`.
 |-----------|------|-------------|
 | `applyToJob(input: CreateApplicationInput!)` | Mutation | Apply as worker (auth). |
 | `updateApplicationStatus(applicationId: String!, input: UpdateApplicationStatusInput!)` | Mutation | Update application status (auth, employer). |
+| `withdrawApplication(applicationId: String!)` | Mutation | Withdraw own application (sets WITHDRAWN; auth, worker-owner). |
 | `applicationsForJob(jobId: String!, page?, pageSize?)` | Query | List applications for a job (auth, employer). |
 | `myApplications(page?, pageSize?)` | Query | List own applications (auth). |
+
+New `withdrawApplication` enables workers to retract (visible in lists for history). Use with `updateApplicationStatus` for employer actions (e.g., to HIRED).
 
 ### Queries
 

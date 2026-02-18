@@ -165,11 +165,56 @@ Each Next.js app creates an optimized production build in `.next/`. Deploy with 
 
 ---
 
+## 4. Standalone Portal (Port 3007)
+
+**URL:** http://localhost:3007  
+**Purpose:** Standalone web app (no dependencies in libraries or anywhere else in the monorepo) for unified worker/employer experience. Captures user type at registration to provide different pages/layouts. Directly calls existing GraphQL APIs via inlined fetch helpers.
+
+### Features
+- **Register** (`/register`) – email/password + userType (WORKER/EMPLOYER), optional name; determines role-specific UI
+- **Login** (`/login`) – email/password
+- **Profile** (`/dashboard/profile`) – update with profile photo (URL), name, age/DOB, skills, company name, location, bio, etc. (conditional fields; handles create/update)
+- **Conditional Dashboard/Layout** (`/dashboard` + subpages):
+  - **Worker flows:** Job listing/search/viewing (`/dashboard/jobs`), applications list (`/dashboard/applications`), worker details via profiles
+  - **Employer flows:** Create/view self job postings (`/dashboard/jobs`, `/dashboard/jobs/new`, `/dashboard/jobs/[id]`), list applicants + view worker details
+- **Standalone Design:** Minimal deps (Next.js/React only), inlined auth context, GraphQL client, basic Tailwind components; no @onsite360/* packages, types, or UI shared libs
+- **Other:** Role-based nav, protected routes, direct API integration for auth/user/job services
+- **New Features:** Employer job publish (DRAFT→PUBLISHED), worker apply (w/ cover msg), view applications (applicantsForJob/myApps + worker details/photo/skills), withdraw (new API); fixes prior profile/publish errors
+- **Logging:** Integrated for debugging (see below)
+
+### Environment
+Copy `.env.example` to `.env` (same GraphQL URLs as other apps).
+
+### Sample Usage
+1. Register as WORKER or EMPLOYER
+2. Complete profile (now robust w/ create/update)
+3. Worker: search/apply jobs, manage apps/withdraw
+4. Employer: create/publish jobs, view apps/worker details
+
+**Note:** Full flows active; previously stubbed features implemented. Worker listing via apps + profiles.
+
+### Logging (New)
+- **Config:** `NEXT_PUBLIC_LOG_LEVEL=DEBUG|INFO|WARN|ERROR` (portal .env; default INFO). DEBUG verbose for API/profile/job errors.
+- **Core Services:** `LOG_LEVEL` env (NestJS Logger all levels; DEBUG=verbose/debug).
+- **Details:** graphqlRequest, services/resolvers, profile/job actions instrumented w/ levels. Set DEBUG to trace failures (e.g., mutations, validation).
+- Updated in main.ts*, lib/logger.ts, WEB_APPS.md/GRAPHQL_API.md .
+
+---
+
+## Architecture Notes (Standalone Portal)
+
+- **No Library Dependencies:** Self-contained implementation to demonstrate direct API usage and independence.
+- **Role-Based UI:** Registration captures userType; dashboard layout/pages adapt dynamically.
+- **Error Resilience:** Profile helpers fallback create <-> update; GraphQL direct fetch with token auth.
+
+---
+
 ## Future Enhancements
 
 - **Geolocation search:** Add lat/lng to jobs and filter by radius (requires backend: PostGIS or distance calculation).
 - **Sort by "last posted":** Implemented in backend (`sortBy: PUBLISHED_AT`); add UI controls in worker jobs search.
 - **Browse workers (employer):** Add `workersSearch` API to user-management-service (employer can see all workers, not just applicants).
-- **File uploads:** Resume/avatar upload (e.g., S3 or local file storage).
+- **File uploads:** Resume/avatar upload (e.g., S3 or local file storage) for true photo support.
 - **Real-time updates:** WebSocket or Server-Sent Events for application status changes.
 - **E2E tests:** Playwright or Cypress for full user flows.
+- **Enhance Standalone Portal:** Full applicants UI, job apply form, publish job, etc.; mobile responsiveness per DesignLanguage.MD.

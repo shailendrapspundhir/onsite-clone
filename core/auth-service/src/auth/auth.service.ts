@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, ConflictException, BadRequestExcepti
 import { v4 as uuid } from 'uuid';
 import { User } from './entities/user.entity';
 import { AuthProvider, UserType, REFRESH_TOKEN_TTL_SECONDS } from '@onsite360/types';
-import { hashPassword, verifyPassword, hashRefreshToken, generateOtp, generateOtpSecret } from '@onsite360/common';
+import { hashPassword, verifyPassword, hashRefreshToken, generateOtp, generateOtpSecret, Logger as LoggerDecorator } from '@onsite360/common'; // LoggerDecorator for input/output debug logs (pretty JSON on DEBUG)
 import { JwtService } from '../jwt/jwt.service';
 import { RedisService } from '../redis/redis.service';
 import { CACHE_TTL_AUTH_TOKEN } from '@onsite360/types';
@@ -26,6 +26,7 @@ export class AuthService {
   get sessionRepo() { return this.db.getSessionRepository(); }
   get otpSecretRepo() { return this.db.getOtpSecretRepository(); }
 
+  @LoggerDecorator()
   async registerWithEmail(input: RegisterEmailInput): Promise<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }> {
     const existing = await this.userRepo.findOne({ where: { email: input.email.toLowerCase() } });
     if (existing) throw new ConflictException('User with this email already exists');
@@ -51,6 +52,7 @@ export class AuthService {
     return this.createSession(user, undefined, undefined);
   }
 
+  @LoggerDecorator()
   async loginWithEmail(input: LoginEmailInput, userAgent?: string, ip?: string): Promise<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }> {
     const user = await this.userRepo.findOne({ where: { email: input.email.toLowerCase() } });
     if (!user) throw new UnauthorizedException('Invalid email or password');
@@ -64,6 +66,7 @@ export class AuthService {
     return this.createSession(user, userAgent, ip);
   }
 
+  @LoggerDecorator()
   async sendOtp(input: OtpSendInput): Promise<{ success: boolean; message: string }> {
     const key = input.channel === 'EMAIL' ? input.email?.toLowerCase() : input.phone;
     if (!key) throw new BadRequestException('Email or phone required for OTP');
@@ -105,6 +108,7 @@ export class AuthService {
     return { success: true, message: 'OTP sent. In development, check logs or use verifyOtp with the generated code.' };
   }
 
+  @LoggerDecorator()
   async verifyOtpAndLogin(input: OtpVerifyInput, userAgent?: string, ip?: string): Promise<{ user: User; accessToken: string; refreshToken: string; expiresIn: number } | null> {
     const key = input.channel === 'EMAIL' ? input.email?.toLowerCase() : input.phone;
     if (!key) throw new BadRequestException('Email or phone required');
@@ -132,6 +136,7 @@ export class AuthService {
     return this.createSession(user, userAgent, ip);
   }
 
+  @LoggerDecorator()
   async refreshTokens(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
     try {
       const payload = this.jwt.verifyRefresh(refreshToken);
@@ -152,6 +157,7 @@ export class AuthService {
     }
   }
 
+  @LoggerDecorator()
   async logout(refreshToken: string): Promise<{ success: boolean }> {
     try {
       const payload = this.jwt.verifyRefresh(refreshToken);
@@ -205,6 +211,7 @@ export class AuthService {
     }
   }
 
+  @LoggerDecorator()
   async listUsers(input: ListUsersInput) {
     const { page, pageSize, offset, limit } = normalizePagination({
       page: input.page,

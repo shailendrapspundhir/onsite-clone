@@ -1,9 +1,13 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
 import { WorkerProfile } from './entities/worker-profile.entity';
 import { RedisService } from '../redis/redis.service';
 import { CACHE_TTL_USER_PROFILE } from '@onsite360/types';
 import type { CreateWorkerProfileInput, UpdateWorkerProfileInput } from './dto/worker-profile.input';
 import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
+import { Logger as LoggerDecorator } from '@onsite360/common'; // @LoggerDecorator for input/output debug logs (pretty JSON on DEBUG)
+
+// Logs added across services for DEBUG/INFO/etc (via env LOG_LEVEL)
+// Helps pinpoint profile errors, mutations etc.
 
 @Injectable()
 export class WorkerService {
@@ -14,9 +18,15 @@ export class WorkerService {
 
   get repo() { return this.db.getWorkerProfileRepository(); }
 
+  @LoggerDecorator()
   async create(userId: string, input: CreateWorkerProfileInput): Promise<WorkerProfile> {
+    Logger.debug(`Creating worker profile for user ${userId}`, { input: { ...input, skills: input.skills?.length } }, 'WorkerService');
+
     const existing = await this.repo.findOne({ where: { userId } });
-    if (existing) throw new ForbiddenException('Worker profile already exists for this user');
+    if (existing) {
+      Logger.warn(`Profile already exists for user ${userId}`, 'WorkerService');
+      throw new ForbiddenException('Worker profile already exists for this user');
+    }
 
     const profile = this.repo.create({
       userId,
@@ -34,6 +44,7 @@ export class WorkerService {
     });
     const saved = await this.repo.save(profile);
     await this.invalidateCache(userId);
+    Logger.log(`Worker profile created for ${userId}: ${saved.id}`, 'WorkerService');
     return saved;
   }
 

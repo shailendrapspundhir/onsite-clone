@@ -32,6 +32,22 @@ export class ApplicationResolver {
     return this.service.updateStatus(employerId, applicationId, input.status, input.employerNotes);
   }
 
+  /**
+   * Withdraw an application (worker-owned; sets status to WITHDRAWN).
+   * Mirrors updateStatus but enforces worker ownership for convenience.
+   * Enables workers to retract; visible to employers.
+   */
+  @Mutation(() => JobApplication)
+  @UseGuards(GqlAuthGuard)
+  // @SchemaValidate omitted (no dedicated schema; reuses application validate if needed)
+  async withdrawApplication(
+    @CurrentUserId() workerId: string,
+    @Args('applicationId') applicationId: string,
+  ): Promise<JobApplication> {
+    // Delegate to service (reuses update logic with ownership check for worker)
+    return this.service.withdraw(workerId, applicationId);
+  }
+
   @Query(() => PaginatedApplications)
   @UseGuards(GqlAuthGuard)
   async applicationsForJob(
