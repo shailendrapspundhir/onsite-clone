@@ -1,11 +1,6 @@
 import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { User } from './entities/user.entity';
-import { Credential } from './entities/credential.entity';
-import { Session } from './entities/session.entity';
-import { OtpSecret } from './entities/otp-secret.entity';
 import { AuthProvider, UserType, REFRESH_TOKEN_TTL_SECONDS } from '@onsite360/types';
 import { hashPassword, verifyPassword, hashRefreshToken, generateOtp, generateOtpSecret } from '@onsite360/common';
 import { JwtService } from '../jwt/jwt.service';
@@ -16,17 +11,20 @@ import type { LoginEmailInput } from './dto/login.input';
 import type { OtpSendInput, OtpVerifyInput } from './dto/otp.input';
 import type { ListUsersInput } from './dto/list-users.input';
 import { normalizePagination, buildPaginatedResult } from '@onsite360/common';
+import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepo: Repository<User>,
-    @InjectRepository(Credential) private credentialRepo: Repository<Credential>,
-    @InjectRepository(Session) private sessionRepo: Repository<Session>,
-    @InjectRepository(OtpSecret) private otpSecretRepo: Repository<OtpSecret>,
+    private db: InMemoryDatabaseService,
     private jwt: JwtService,
     private redis: RedisService,
   ) {}
+
+  get userRepo() { return this.db.getUserRepository(); }
+  get credentialRepo() { return this.db.getCredentialRepository(); }
+  get sessionRepo() { return this.db.getSessionRepository(); }
+  get otpSecretRepo() { return this.db.getOtpSecretRepository(); }
 
   async registerWithEmail(input: RegisterEmailInput): Promise<{ user: User; accessToken: string; refreshToken: string; expiresIn: number }> {
     const existing = await this.userRepo.findOne({ where: { email: input.email.toLowerCase() } });
@@ -140,11 +138,12 @@ export class AuthService {
       const hash = hashRefreshToken(refreshToken);
       const session = await this.sessionRepo.findOne({
         where: { id: payload.sessionId, refreshTokenHash: hash },
-        relations: ['user'],
       });
       if (!session || new Date() > session.expiresAt) throw new UnauthorizedException('Invalid or expired refresh token');
 
-      const user = session.user as User;
+      const user = await this.userRepo.findOne({ where: { id: session.userId } });
+      if (!user) throw new UnauthorizedException('Invalid or expired refresh token');
+
       await this.sessionRepo.remove(session);
       const result = await this.createSession(user, session.userAgent, session.ipAddress);
       return { accessToken: result.accessToken, refreshToken: result.refreshToken, expiresIn: result.expiresIn };
@@ -223,6 +222,6 @@ export class AuthService {
       qb.andWhere('user.createdAt >= :since', { since: new Date(input.since) });
     }
     const [items, total] = await qb.getManyAndCount();
-    return buildPaginatedResult(items, total, page, pageSize);
+    return buildPaginatedResult(items as User[], total as number, page, pageSize);
   }
 }

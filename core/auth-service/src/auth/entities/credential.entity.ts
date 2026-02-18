@@ -1,12 +1,3 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { AuthProvider } from '@onsite360/types';
 import { User } from './user.entity';
@@ -14,34 +5,24 @@ import { User } from './user.entity';
 registerEnumType(AuthProvider, { name: 'AuthProvider' });
 
 @ObjectType()
-@Entity('credentials')
 export class Credential {
   @Field()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column('uuid')
-  userId: string;
+  userId!: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  user?: User;
 
   @Field(() => AuthProvider)
-  @Column({ type: 'enum', enum: AuthProvider })
-  authProvider: AuthProvider;
+  authProvider!: AuthProvider;
 
-  @Column({ nullable: true })
   passwordHash?: string;
 
-  @Column({ nullable: true, unique: true })
   externalId?: string;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

@@ -1,97 +1,94 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
-import { JobRole } from '@onsite360/types';
-
-registerEnumType(JobRole, { name: 'JobRole' });
+import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
-@Entity('worker_profiles')
 export class WorkerProfile {
   @Field()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
-  @Column('uuid', { unique: true })
-  userId: string;
+  userId!: string;
 
   @Field()
-  @Column()
-  firstName: string;
+  firstName!: string;
 
   @Field()
-  @Column()
-  lastName: string;
+  lastName!: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'date', nullable: true })
   dateOfBirth?: Date;
 
-  @Field(() => [String])
-  @Column('text', { default: '' })
-  skillsStorage: string;
+  private skillsInternal: string[] = [];
 
   @Field(() => [String])
   get skills(): string[] {
-    return this.skillsStorage ? this.skillsStorage.split(',') : [];
+    return [...this.skillsInternal];
   }
-  set skills(v: string[]) {
-    this.skillsStorage = Array.isArray(v) ? v.join(',') : '';
+  set skills(value: string[]) {
+    this.skillsInternal = Array.isArray(value) ? [...value] : [];
+  }
+
+  @Field(() => [String])
+  get skillsStorage(): string[] {
+    return this.skills;
+  }
+  set skillsStorage(value: string[]) {
+    this.skills = value ?? [];
   }
 
   @Field({ nullable: true })
-  @Column({ type: 'int', nullable: true })
   experienceYears?: number;
 
   @Field({ nullable: true })
-  @Column({ type: 'text', nullable: true })
   bio?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   location?: string;
 
-  @Field(() => [String], { nullable: true })
-  @Column('text', { nullable: true })
-  preferredLocationsStorage?: string;
+  private preferredLocationsInternal?: string[];
 
+  @Field(() => [String], { nullable: true })
   get preferredLocations(): string[] | undefined {
-    return this.preferredLocationsStorage ? this.preferredLocationsStorage.split(',') : undefined;
+    return this.preferredLocationsInternal ? [...this.preferredLocationsInternal] : undefined;
   }
-  set preferredLocations(v: string[] | undefined) {
-    this.preferredLocationsStorage = v?.length ? v.join(',') : undefined;
+  set preferredLocations(value: string[] | undefined) {
+    this.preferredLocationsInternal = value?.length ? [...value] : undefined;
   }
 
   @Field(() => [String], { nullable: true })
-  @Column('text', { nullable: true })
-  certificationsStorage?: string;
-
-  get certifications(): string[] | undefined {
-    return this.certificationsStorage ? this.certificationsStorage.split(',') : undefined;
+  get preferredLocationsStorage(): string[] | undefined {
+    return this.preferredLocations ? [...this.preferredLocations] : undefined;
   }
-  set certifications(v: string[] | undefined) {
-    this.certificationsStorage = v?.length ? v.join(',') : undefined;
+  set preferredLocationsStorage(value: string[] | undefined) {
+    this.preferredLocations = value;
+  }
+
+  private certificationsInternal?: string[];
+
+  @Field(() => [String], { nullable: true })
+  get certifications(): string[] | undefined {
+    return this.certificationsInternal ? [...this.certificationsInternal] : undefined;
+  }
+  set certifications(value: string[] | undefined) {
+    this.certificationsInternal = value?.length ? [...value] : undefined;
+  }
+
+  @Field(() => [String], { nullable: true })
+  get certificationsStorage(): string[] | undefined {
+    return this.certifications ? [...(this.certifications ?? [])] : undefined;
+  }
+  set certificationsStorage(value: string[] | undefined) {
+    this.certifications = value;
   }
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   resumeUrl?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   avatarUrl?: string;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

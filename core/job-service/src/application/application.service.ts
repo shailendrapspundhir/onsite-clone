@@ -1,19 +1,20 @@
 import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { JobApplication } from './entities/job-application.entity';
 import { Job } from '../job/entities/job.entity';
 import { ApplicationStatus, JobStatus } from '@onsite360/types';
 import { JobService } from '../job/job.service';
 import { buildPaginatedResult, normalizePagination } from '@onsite360/common';
 import type { PaginatedResult } from '@onsite360/types';
+import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
 
 @Injectable()
 export class ApplicationService {
   constructor(
-    @InjectRepository(JobApplication) private repo: Repository<JobApplication>,
+    private db: InMemoryDatabaseService,
     private jobService: JobService,
   ) {}
+
+  get repo() { return this.db.getJobApplicationRepository(); }
 
   async apply(workerId: string, jobId: string, coverMessage?: string): Promise<JobApplication> {
     const job = await this.jobService.findById(jobId);
@@ -32,9 +33,10 @@ export class ApplicationService {
   }
 
   async updateStatus(employerId: string, applicationId: string, status: ApplicationStatus, employerNotes?: string): Promise<JobApplication> {
-    const application = await this.repo.findOne({ where: { id: applicationId }, relations: ['job'] });
+    const application = await this.repo.findOne({ where: { id: applicationId } });
     if (!application) throw new NotFoundException('Application not found');
-    const job = application.job as Job;
+    const job: Job = await this.jobService.findById(application.jobId);
+    application.job = job;
     if (job.employerId !== employerId) throw new ForbiddenException('Not authorized to update this application');
 
     application.status = status;
@@ -58,7 +60,6 @@ export class ApplicationService {
     const { page: p, pageSize: ps, offset, limit } = normalizePagination({ page, pageSize });
     const [items, total] = await this.repo.findAndCount({
       where: { workerId },
-      relations: ['job'],
       order: { appliedAt: 'DESC' },
       skip: offset,
       take: limit,

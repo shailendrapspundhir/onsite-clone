@@ -8,9 +8,6 @@ Complete setup in 5 steps to run all backend services and three web applications
 
 - **Node.js** 18+ (v20.9+ recommended for Next.js 14+)
 - **pnpm** 10+
-- **Docker** (for PostgreSQL and Redis)
-- **PostgreSQL** 14+
-- **Redis** 6+
 
 ---
 
@@ -22,22 +19,7 @@ pnpm install
 
 ---
 
-## Step 2: Start Docker Services
-
-PostgreSQL and Redis via docker-compose:
-
-```bash
-docker compose up -d
-```
-
-This creates three databases:
-- `onsite360_auth`
-- `onsite360_users`
-- `onsite360_jobs`
-
----
-
-## Step 3: Build Shared Packages
+## Step 2: Build Shared Packages
 
 ```bash
 pnpm build:packages
@@ -51,7 +33,7 @@ Builds:
 
 ---
 
-## Step 4: Configure Environment
+## Step 3: Configure Environment
 
 Copy `.env.example` to `.env` in each backend app:
 
@@ -69,7 +51,7 @@ Web apps already have `.env` files created (defaults point to localhost).
 
 ---
 
-## Step 5: Run Everything
+## Step 4: Run Everything
 
 ### Start backend services (ports 3001, 3002, 3003):
 

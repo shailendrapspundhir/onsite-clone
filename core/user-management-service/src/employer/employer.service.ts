@@ -1,17 +1,18 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { EmployerProfile } from './entities/employer-profile.entity';
 import { RedisService } from '../redis/redis.service';
 import { CACHE_TTL_USER_PROFILE } from '@onsite360/types';
 import type { CreateEmployerProfileInput, UpdateEmployerProfileInput } from './dto/employer-profile.input';
+import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
 
 @Injectable()
 export class EmployerService {
   constructor(
-    @InjectRepository(EmployerProfile) private repo: Repository<EmployerProfile>,
+    private db: InMemoryDatabaseService,
     private redis: RedisService,
   ) {}
+
+  get repo() { return this.db.getEmployerProfileRepository(); }
 
   async create(userId: string, input: CreateEmployerProfileInput): Promise<EmployerProfile> {
     const existing = await this.repo.findOne({ where: { userId } });
@@ -27,7 +28,7 @@ export class EmployerService {
       contactEmail: input.contactEmail,
       contactPhone: input.contactPhone,
       logoUrl: input.logoUrl,
-      desiredRolesStorage: input.desiredRoles.join(','),
+      desiredRoles: input.desiredRoles,
     });
     const saved = await this.repo.save(profile);
     await this.invalidateCache(userId);
@@ -62,7 +63,7 @@ export class EmployerService {
     if (input.contactEmail !== undefined) profile.contactEmail = input.contactEmail;
     if (input.contactPhone !== undefined) profile.contactPhone = input.contactPhone;
     if (input.logoUrl !== undefined) profile.logoUrl = input.logoUrl;
-    if (input.desiredRoles !== undefined) profile.desiredRolesStorage = input.desiredRoles.join(',');
+    if (input.desiredRoles !== undefined) profile.desiredRoles = input.desiredRoles;
 
     const saved = await this.repo.save(profile);
     await this.invalidateCache(userId);

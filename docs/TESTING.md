@@ -282,15 +282,12 @@ pnpm add -D supertest @types/supertest
 - **Idempotent:** Skips existing users (checks for ConflictException)
 
 ### Manual Cleanup
-If you need to reset:
+If you need to reset in-memory data, restart the affected service:
 ```bash
-# Drop and recreate databases (in psql or via docker exec)
-docker exec -it <postgres-container> psql -U postgres -c "DROP DATABASE onsite360_auth; DROP DATABASE onsite360_users; DROP DATABASE onsite360_jobs;"
-docker exec -it <postgres-container> psql -U postgres -f /docker-entrypoint-initdb.d/init.sql
-# Then re-run services (TypeORM synchronize will recreate tables)
-pnpm dev:all
-pnpm seed
+pnpm --filter auth-service dev
+# or user-management-service / job-service as needed
 ```
+Running the seed script afterwards will repopulate sample records.
 
 ---
 

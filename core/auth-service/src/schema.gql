@@ -118,6 +118,8 @@ type User {
   createdAt: DateTime!
   email: String!
   id: String!
+  isEmailVerified: Boolean!
+  isPhoneVerified: Boolean!
   phone: String
   updatedAt: DateTime!
   userType: UserType!

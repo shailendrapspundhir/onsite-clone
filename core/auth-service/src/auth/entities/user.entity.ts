@@ -1,52 +1,34 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { UserType } from '@onsite360/types';
 
 registerEnumType(UserType, { name: 'UserType' });
 
 @ObjectType()
-@Entity('users')
 export class User {
   @Field()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
-  @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true, unique: true })
   phone?: string;
 
   @Field(() => UserType)
-  @Column({ type: 'enum', enum: UserType })
-  userType: UserType;
-
-  @Column({ default: false })
-  isEmailVerified: boolean;
-
-  @Column({ default: false })
-  isPhoneVerified: boolean;
+  userType!: UserType;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  isEmailVerified: boolean = false;
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  isPhoneVerified: boolean = false;
 
-  @OneToMany('Credential', 'user')
+  @Field()
+  createdAt!: Date;
+
+  @Field()
+  updatedAt!: Date;
+
   credentials?: unknown[];
-
-  @OneToMany('Session', 'user')
   sessions?: unknown[];
 }

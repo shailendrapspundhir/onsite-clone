@@ -4,11 +4,12 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import type { Request, Response } from 'express';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { SchemaModule } from './schema/schema.module';
 import { RedisModule } from './redis/redis.module';
+import { InMemoryDatabaseModule } from './in-memory-database/in-memory-database.module';
 
 @Module({
   imports: [
@@ -20,18 +21,7 @@ import { RedisModule } from './redis/redis.module';
         limit: 100,
       },
     ]),
-    TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DB_HOST ?? 'localhost',
-        port: parseInt(process.env.DB_PORT ?? '5432', 10),
-        username: process.env.DB_USER ?? 'postgres',
-        password: process.env.DB_PASSWORD ?? 'postgres',
-        database: process.env.DB_NAME ?? 'onsite360_auth',
-        autoLoadEntities: true,
-        synchronize: process.env.NODE_ENV !== 'production',
-      }),
-    }),
+    InMemoryDatabaseModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

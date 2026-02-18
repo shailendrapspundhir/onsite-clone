@@ -1,48 +1,30 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { createClient, type RedisClientType } from 'redis';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class RedisService implements OnModuleInit, OnModuleDestroy {
-  private client: RedisClientType | null = null;
+export class RedisService {
+  private cache = new Map<string, { value: string; expiry?: number }>();
 
-  constructor(private config: ConfigService) {}
-
-  async onModuleInit(): Promise<void> {
-    const url = this.config.get<string>('REDIS_URL', 'redis://localhost:6379');
-    this.client = createClient({ url });
-    this.client.on('error', (err) => console.error('Redis error:', err));
-    await this.client.connect();
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    if (this.client) {
-      await this.client.quit();
-      this.client = null;
-    }
-  }
-
-  getClient(): RedisClientType | null {
-    return this.client;
+  getClient(): null {
+    return null;
   }
 
   async get(key: string): Promise<string | null> {
-    if (!this.client) return null;
-    return this.client.get(key);
+    const item = this.cache.get(key);
+    if (!item) return null;
+    if (item.expiry && Date.now() > item.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+    return item.value;
   }
 
   async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
-    if (!this.client) return;
-    if (ttlSeconds) {
-      await this.client.setEx(key, ttlSeconds, value);
-    } else {
-      await this.client.set(key, value);
-    }
+    const expiry = ttlSeconds ? Date.now() + ttlSeconds * 1000 : undefined;
+    this.cache.set(key, { value, expiry });
   }
 
   async del(key: string): Promise<void> {
-    if (!this.client) return;
-    await this.client.del(key);
+    this.cache.delete(key);
   }
 
   async setTokenCache(key: string, payload: string, ttlSeconds: number): Promise<void> {

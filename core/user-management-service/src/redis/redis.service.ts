@@ -1,51 +1,34 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { createClient, type RedisClientType } from 'redis';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class RedisService implements OnModuleInit, OnModuleDestroy {
-  private client: RedisClientType | null = null;
+export class RedisService {
+  private cache = new Map<string, { value: string; expiry?: number }>();
 
-  getClient(): RedisClientType | null {
-    return this.client;
-  }
-
-  constructor(private config: ConfigService) {}
-
-  async onModuleInit(): Promise<void> {
-    const url = this.config.get<string>('REDIS_URL', 'redis://localhost:6379');
-    this.client = createClient({ url });
-    this.client.on('error', (err) => console.error('Redis error:', err));
-    await this.client.connect();
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    if (this.client) {
-      await this.client.quit();
-      this.client = null;
-    }
+  getClient(): null {
+    return null;
   }
 
   async get<T>(key: string): Promise<T | null> {
-    if (!this.client) return null;
-    const raw = await this.client.get(key);
-    if (!raw) return null;
+    const item = this.cache.get(key);
+    if (!item) return null;
+    if (item.expiry && Date.now() > item.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
     try {
-      return JSON.parse(raw) as T;
+      return JSON.parse(item.value) as T;
     } catch {
-      return raw as unknown as T;
+      return item.value as unknown as T;
     }
   }
 
   async set(key: string, value: string | object, ttlSeconds?: number): Promise<void> {
-    if (!this.client) return;
     const v = typeof value === 'string' ? value : JSON.stringify(value);
-    if (ttlSeconds) await this.client.setEx(key, ttlSeconds, v);
-    else await this.client.set(key, v);
+    const expiry = ttlSeconds ? Date.now() + ttlSeconds * 1000 : undefined;
+    this.cache.set(key, { value: v, expiry });
   }
 
   async del(key: string): Promise<void> {
-    if (!this.client) return;
-    await this.client.del(key);
+    this.cache.delete(key);
   }
 }

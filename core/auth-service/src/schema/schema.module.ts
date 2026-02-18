@@ -1,7 +1,4 @@
 import { Global, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { ValidationSchema } from './entities/validation-schema.entity';
 import {
   SchemaRegistry,
   FileSchemaSource,
@@ -13,17 +10,19 @@ import { SchemaResolver } from './schema.resolver';
 import { SchemaController } from './schema.controller';
 import { SchemaValidateInterceptor } from './schema-validate.interceptor';
 import { RedisService } from '../redis/redis.service';
-import type { Repository } from 'typeorm';
+import { InMemoryDatabaseModule } from '../in-memory-database/in-memory-database.module';
+import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
+import { ValidationSchema } from './entities/validation-schema.entity';
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([ValidationSchema])],
+  imports: [InMemoryDatabaseModule],
   controllers: [SchemaController],
   providers: [
     SchemaValidateInterceptor,
     {
       provide: SchemaRegistryService,
-      useFactory: async (redis: RedisService, repo: Repository<ValidationSchema>) => {
+      useFactory: async (redis: RedisService, db: InMemoryDatabaseService) => {
         const registry = new SchemaRegistry();
         const client = redis.getClient();
         let redisSource: RedisSchemaSource | undefined;
@@ -31,9 +30,14 @@ import type { Repository } from 'typeorm';
           redisSource = new RedisSchemaSource(client, { ttlSeconds: 3600 });
           registry.addSourceFirst(redisSource);
         }
+        const repo = db.getValidationSchemaRepository();
         const dbSource = createDbSchemaSource({
           fetchByName: async (name: string) => {
-            const row = await repo.findOne({ where: { name }, order: { version: 'DESC' } });
+            const schemas = repo
+              .find()
+              .filter((schema: ValidationSchema) => schema.name === name)
+              .sort((a, b) => b.version - a.version);
+            const row = schemas[0];
             if (!row) return null;
             return {
               id: row.id,
@@ -45,8 +49,8 @@ import type { Repository } from 'typeorm';
             };
           },
           listNames: async () => {
-            const rows = await repo.find({ select: { name: true } });
-            return [...new Set(rows.map((r) => r.name))];
+            const rows = repo.find();
+            return [...new Set(rows.map((r: ValidationSchema) => r.name))];
           },
         });
         registry.addSourceLast(dbSource);
@@ -66,7 +70,7 @@ import type { Repository } from 'typeorm';
 
         return new SchemaRegistryService(registry);
       },
-      inject: [RedisService, getRepositoryToken(ValidationSchema)],
+      inject: [RedisService, InMemoryDatabaseService],
     },
     SchemaResolver,
   ],

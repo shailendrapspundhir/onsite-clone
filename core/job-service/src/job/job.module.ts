@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Job } from './entities/job.entity';
 import { JobResolver } from './job.resolver';
 import { JobService } from './job.service';
+import { InMemoryDatabaseModule } from '../in-memory-database/in-memory-database.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Job])],
+  imports: [InMemoryDatabaseModule],
   providers: [JobResolver, JobService],
   exports: [JobService],
 })

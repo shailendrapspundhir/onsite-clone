@@ -1,68 +1,58 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
-import { JobRole } from '@onsite360/types';
-
-registerEnumType(JobRole, { name: 'JobRole' });
+import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
-@Entity('employer_profiles')
 export class EmployerProfile {
   @Field()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
-  @Column('uuid', { unique: true })
-  userId: string;
+  userId!: string;
 
   @Field()
-  @Column()
-  companyName: string;
+  companyName!: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   industry?: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'text', nullable: true })
   description?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   website?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   location?: string;
 
   @Field()
-  @Column()
-  contactEmail: string;
+  contactEmail!: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   contactPhone?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
   logoUrl?: string;
 
+  private desiredRolesInternal: string[] = [];
+
   @Field(() => [String])
-  @Column('text', { default: '' })
-  desiredRolesStorage: string;
-
   get desiredRoles(): string[] {
-    return this.desiredRolesStorage ? this.desiredRolesStorage.split(',') : [];
+    return [...this.desiredRolesInternal];
   }
-  set desiredRoles(v: string[]) {
-    this.desiredRolesStorage = Array.isArray(v) ? v.join(',') : '';
+  set desiredRoles(value: string[]) {
+    this.desiredRolesInternal = Array.isArray(value) ? [...value] : [];
+  }
+
+  @Field(() => [String])
+  get desiredRolesStorage(): string[] {
+    return this.desiredRoles;
+  }
+  set desiredRolesStorage(value: string[]) {
+    this.desiredRoles = value ?? [];
   }
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

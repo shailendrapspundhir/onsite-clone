@@ -31,7 +31,7 @@ Complete implementation of admin dashboard, worker app, and employer app with sh
   - `sortBy`: `PUBLISHED_AT` (default), `CREATED_AT`, `TITLE`
   - `sortOrder`: `DESC` (default), `ASC`
 - **Enums:** `JobSearchSortBy`, `SortOrder` (registered in GraphQL)
-- **Implementation:** Updated `JobService.search()` to use sortBy/sortOrder with TypeORM query builder
+- **Implementation:** Updated `JobService.search()` to support sortBy/sortOrder using in-memory filtering
 
 #### Schemas Package
 - **Fix:** Cached compiled AJV schemas to prevent "schema already exists" error on repeated validations

@@ -37,7 +37,7 @@ pnpm dev:web
 
 # OnSite360 Backend
 
-Modular NestJS backend with **PostgreSQL**, **Redis**, and **GraphQL** for the OnSite360 platform. Built as a **monorepo** with shared types and common logic usable by frontend and services.
+Modular NestJS backend with **in-memory data stores**, **Redis**, and **GraphQL** for the OnSite360 platform. Built as a **monorepo** with shared types and common logic usable by frontend and services.
 
 ## Architecture
 
@@ -54,7 +54,7 @@ Modular NestJS backend with **PostgreSQL**, **Redis**, and **GraphQL** for the O
 | Language    | TypeScript (strict)       |
 | Framework   | NestJS                    |
 | API         | GraphQL (code-first)     |
-| Database    | PostgreSQL (TypeORM)      |
+| Database    | In-memory repositories    |
 | Caching     | Redis                     |
 | Auth        | JWT, bcrypt, TOTP (otplib)|
 | Validation  | class-validator           |

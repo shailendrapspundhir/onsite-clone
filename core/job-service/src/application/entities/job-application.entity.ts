@@ -1,12 +1,3 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { ApplicationStatus } from '@onsite360/types';
 import { Job } from '../../job/entities/job.entity';
@@ -14,41 +5,30 @@ import { Job } from '../../job/entities/job.entity';
 registerEnumType(ApplicationStatus, { name: 'ApplicationStatus' });
 
 @ObjectType()
-@Entity('job_applications')
 export class JobApplication {
   @Field()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Field()
-  @Column('uuid')
-  jobId: string;
+  jobId!: string;
 
-  @ManyToOne(() => Job, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'jobId' })
-  job: Job;
+  job?: Job;
 
   @Field()
-  @Column('uuid')
-  workerId: string;
+  workerId!: string;
 
   @Field(() => String)
-  @Column({ type: 'enum', enum: ApplicationStatus, default: ApplicationStatus.PENDING })
-  status: ApplicationStatus;
+  status: ApplicationStatus = ApplicationStatus.PENDING;
 
   @Field({ nullable: true })
-  @Column({ type: 'text', nullable: true })
   coverMessage?: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'text', nullable: true })
   employerNotes?: string;
 
   @Field()
-  @CreateDateColumn()
-  appliedAt: Date;
+  appliedAt!: Date;
 
   @Field()
-  @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

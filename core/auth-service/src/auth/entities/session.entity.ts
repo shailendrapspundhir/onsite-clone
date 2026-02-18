@@ -1,41 +1,23 @@
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { User } from './user.entity';
 
 @ObjectType()
-@Entity('sessions')
 export class Session {
   @Field()
-  @PrimaryColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column('uuid')
-  userId: string;
+  userId!: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  user?: User;
 
-  @Column()
-  refreshTokenHash: string;
+  refreshTokenHash!: string;
 
-  @Column({ nullable: true })
   userAgent?: string;
 
-  @Column({ nullable: true })
   ipAddress?: string;
 
-  @Column({ type: 'timestamptz' })
-  expiresAt: Date;
+  expiresAt!: Date;
 
   @Field()
-  @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }

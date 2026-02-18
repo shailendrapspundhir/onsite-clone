@@ -1,13 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from './entities/user.entity';
-import { Credential } from './entities/credential.entity';
-import { Session } from './entities/session.entity';
-import { OtpSecret } from './entities/otp-secret.entity';
 import { JwtService } from '../jwt/jwt.service';
 import { RedisService } from '../redis/redis.service';
+import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
 describe('AuthService', () => {
   let service: AuthService;
   const mockUserRepo = {
@@ -44,17 +40,22 @@ describe('AuthService', () => {
     set: jest.fn(),
     get: jest.fn(),
     del: jest.fn(),
+    setTokenCache: jest.fn(),
   };
+
+  const mockDb = {
+    getUserRepository: jest.fn(() => mockUserRepo),
+    getCredentialRepository: jest.fn(() => mockCredentialRepo),
+    getSessionRepository: jest.fn(() => mockSessionRepo),
+    getOtpSecretRepository: jest.fn(() => mockOtpSecretRepo),
+  } as unknown as InMemoryDatabaseService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: getRepositoryToken(User), useValue: mockUserRepo },
-        { provide: getRepositoryToken(Credential), useValue: mockCredentialRepo },
-        { provide: getRepositoryToken(Session), useValue: mockSessionRepo },
-        { provide: getRepositoryToken(OtpSecret), useValue: mockOtpSecretRepo },
+        { provide: InMemoryDatabaseService, useValue: mockDb },
         { provide: JwtService, useValue: mockJwt },
         { provide: RedisService, useValue: mockRedis },
       ],

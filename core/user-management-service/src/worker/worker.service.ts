@@ -1,17 +1,18 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { WorkerProfile } from './entities/worker-profile.entity';
 import { RedisService } from '../redis/redis.service';
 import { CACHE_TTL_USER_PROFILE } from '@onsite360/types';
 import type { CreateWorkerProfileInput, UpdateWorkerProfileInput } from './dto/worker-profile.input';
+import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
 
 @Injectable()
 export class WorkerService {
   constructor(
-    @InjectRepository(WorkerProfile) private repo: Repository<WorkerProfile>,
+    private db: InMemoryDatabaseService,
     private redis: RedisService,
   ) {}
+
+  get repo() { return this.db.getWorkerProfileRepository(); }
 
   async create(userId: string, input: CreateWorkerProfileInput): Promise<WorkerProfile> {
     const existing = await this.repo.findOne({ where: { userId } });
@@ -22,12 +23,12 @@ export class WorkerService {
       firstName: input.firstName,
       lastName: input.lastName,
       dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : undefined,
-      skillsStorage: input.skills.join(','),
+      skills: input.skills,
       experienceYears: input.experienceYears,
       bio: input.bio,
       location: input.location,
-      preferredLocationsStorage: input.preferredLocations?.join(','),
-      certificationsStorage: input.certifications?.join(','),
+      preferredLocations: input.preferredLocations,
+      certifications: input.certifications,
       resumeUrl: input.resumeUrl,
       avatarUrl: input.avatarUrl,
     });
@@ -59,7 +60,7 @@ export class WorkerService {
     if (input.firstName !== undefined) profile.firstName = input.firstName;
     if (input.lastName !== undefined) profile.lastName = input.lastName;
     if (input.dateOfBirth !== undefined) profile.dateOfBirth = new Date(input.dateOfBirth);
-    if (input.skills !== undefined) profile.skillsStorage = input.skills.join(',');
+    if (input.skills !== undefined) profile.skills = input.skills;
     if (input.experienceYears !== undefined) profile.experienceYears = input.experienceYears;
     if (input.bio !== undefined) profile.bio = input.bio;
     if (input.location !== undefined) profile.location = input.location;

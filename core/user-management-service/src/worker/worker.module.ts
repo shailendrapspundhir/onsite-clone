@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { WorkerProfile } from './entities/worker-profile.entity';
 import { WorkerResolver } from './worker.resolver';
 import { WorkerService } from './worker.service';
+import { InMemoryDatabaseModule } from '../in-memory-database/in-memory-database.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([WorkerProfile])],
+  imports: [InMemoryDatabaseModule],
   providers: [WorkerResolver, WorkerService],
   exports: [WorkerService],
 })

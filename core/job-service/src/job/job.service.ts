@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Job } from './entities/job.entity';
 import { JobStatus } from '@onsite360/types';
 import { RedisService } from '../redis/redis.service';
@@ -9,13 +7,16 @@ import { CACHE_TTL_JOB_LISTING } from '@onsite360/types';
 import type { CreateJobInput, UpdateJobInput, JobSearchInput } from './dto/job.input';
 import { JobSearchSortBy, SortOrder } from './dto/job.input';
 import type { PaginatedResult } from '@onsite360/types';
+import { InMemoryDatabaseService } from '../in-memory-database/in-memory-database.service';
 
 @Injectable()
 export class JobService {
   constructor(
-    @InjectRepository(Job) private repo: Repository<Job>,
+    private db: InMemoryDatabaseService,
     private redis: RedisService,
   ) {}
+
+  get repo() { return this.db.getJobRepository(); }
 
   async create(employerId: string, input: CreateJobInput): Promise<Job> {
     const job = this.repo.create({
@@ -84,30 +85,35 @@ export class JobService {
 
     const sortBy = input.sortBy ?? JobSearchSortBy.PUBLISHED_AT;
     const sortOrder = input.sortOrder ?? SortOrder.DESC;
-    const orderColumn =
-      sortBy === JobSearchSortBy.TITLE
-        ? 'job.title'
-        : sortBy === JobSearchSortBy.CREATED_AT
-          ? 'job.createdAt'
-          : 'job.publishedAt';
-    const orderDirection = sortOrder === SortOrder.ASC ? 'ASC' : 'DESC';
 
-    const qb = this.repo
-      .createQueryBuilder('job')
-      .where('job.status = :status', { status: JobStatus.PUBLISHED })
-      .orderBy(orderColumn, orderDirection);
+    let jobs = this.repo.find().filter(job => job.status === JobStatus.PUBLISHED);
 
     if (input.query) {
-      qb.andWhere('(job.title ILIKE :query OR job.description ILIKE :query)', {
-        query: `%${input.query}%`,
-      });
+      const q = input.query.toLowerCase();
+      jobs = jobs.filter(job => job.title.toLowerCase().includes(q) || (job.description && job.description.toLowerCase().includes(q)));
     }
-    if (input.role) qb.andWhere('job.role = :role', { role: input.role });
-    if (input.employmentType) qb.andWhere('job.employmentType = :employmentType', { employmentType: input.employmentType });
-    if (input.location) qb.andWhere('job.location ILIKE :location', { location: `%${input.location}%` });
-    if (input.minSalary != null) qb.andWhere('(job.salaryMax >= :minSalary OR job.salaryMin >= :minSalary)', { minSalary: input.minSalary });
+    if (input.role) jobs = jobs.filter(job => job.role === input.role);
+    if (input.employmentType) jobs = jobs.filter(job => job.employmentType === input.employmentType);
+    if (input.location) {
+      const loc = input.location.toLowerCase();
+      jobs = jobs.filter(job => job.location && job.location.toLowerCase().includes(loc));
+    }
+    if (input.minSalary != null) {
+      const minSal = input.minSalary;
+      jobs = jobs.filter(job => (job.salaryMax != null && job.salaryMax >= minSal) || (job.salaryMin != null && job.salaryMin >= minSal));
+    }
 
-    const [items, total] = await qb.skip(offset).take(limit).getManyAndCount();
+    // Sort
+    if (sortBy === JobSearchSortBy.TITLE) {
+      jobs.sort((a, b) => sortOrder === SortOrder.ASC ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
+    } else if (sortBy === JobSearchSortBy.CREATED_AT) {
+      jobs.sort((a, b) => sortOrder === SortOrder.ASC ? a.createdAt.getTime() - b.createdAt.getTime() : b.createdAt.getTime() - a.createdAt.getTime());
+    } else {
+      jobs.sort((a, b) => sortOrder === SortOrder.ASC ? (a.publishedAt?.getTime() ?? 0) - (b.publishedAt?.getTime() ?? 0) : (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
+    }
+
+    const items = jobs.slice(offset, offset + limit);
+    const total = jobs.length;
     const result = buildPaginatedResult(items, total, page, pageSize);
     await this.redis.set(cacheKey, result, CACHE_TTL_JOB_LISTING);
     return result;
